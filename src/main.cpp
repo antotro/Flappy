@@ -10,6 +10,7 @@
 #define B 20
 #define C 35
 #define D 80
+// definition
 
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite bird = TFT_eSprite(&tft);
