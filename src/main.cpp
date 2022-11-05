@@ -158,7 +158,7 @@ void loop()
     break;
   case 1:
     old_time = micros();
-    // CLOUD DRAWING //
+    // CLOUD DRAWING //  //
     level = 1 + points / 10;
     cloud.pushToSprite(&screen, cloud_1.x_pos, cloud_1.y_pos, TFT_TRANSPARENT);
     cloud.pushToSprite(&screen, cloud_2.x_pos, cloud_2.y_pos, TFT_TRANSPARENT);
