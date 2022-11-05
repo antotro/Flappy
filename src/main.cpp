@@ -19,7 +19,7 @@ TFT_eSprite screen = TFT_eSprite(&tft);
 TFT_eSprite cloud = TFT_eSprite(&tft);
 TFT_eSprite pipes = TFT_eSprite(&tft);
 
-unsigned long old_time = 0.0;
+unsigned long old_time = 0;
 float Delta_time = 0.0;
 double y_bird = 0;
 double old_y_bird = 0;
@@ -28,6 +28,10 @@ double x_pipes = 135;
 double pipes_vel = 25;
 double level = 1;
 int pipe_edge = random(20, 141);
+unsigned long lastpress;
+unsigned long deb_delay = 40;
+bool reading;
+bool input_state = false;
 
 int points = 0;
 int old_points = -1;
@@ -84,7 +88,7 @@ void make_bird()
   bird.fillSprite(TFT_TRANSPARENT);
   bird.pushImage(0, 0, 20, 20, bird_img);
   bird.setPivot(10, 10);
-  
+
   // BASIC SHAPE VERSION
   // bird.fillCircle(15, 15, 15, TFT_YELLOW);
   // bird.fillCircle(24, 9, 7, TFT_WHITE);
@@ -123,14 +127,19 @@ void setup()
 
 void loop()
 {
+  reading = !digitalRead(0) | !digitalRead(35);
   switch (caso)
   {
   case 0:
-    // tft.drawString("Press a key", 10, 40, 4);
-    // tft.drawString("to start...", 10, 80, 4);
-    tft.pushImage(0,0,135,240,splash_img);
-    if (!digitalRead(0) || !digitalRead(35))
+    tft.pushImage(0, 0, 135, 240, splash_img);
+    if (reading != input_state)
     {
+      lastpress = millis();
+      input_state = reading;
+    }
+    if (millis() - lastpress > deb_delay && input_state == true)
+    {
+      input_state = 0;
       caso = 1;
       reset_cloud(cloud_1);
       reset_cloud(cloud_2);
@@ -193,9 +202,15 @@ void loop()
       old_y_bird = y_bird;
     }
     vel_bird += acceleration;
-    if (!digitalRead(0) || !digitalRead(35))
+    if (reading != input_state)
     {
-      vel_bird = -150 * level;
+      lastpress = millis();
+      input_state = reading;
+    }
+    if (millis() - lastpress > deb_delay && input_state == true)
+    {
+      input_state = 0;
+      vel_bird = -200 * level;
     }
     y_bird += vel_bird * Delta_time;
     bird_rotated.pushToSprite(&screen, 20, y_bird, TFT_TRANSPARENT);
@@ -264,8 +279,14 @@ void loop()
     tft.drawString("OVER", 30, 80, 4);
     tft.drawString("SCORE: ", 5, 150, 4);
     tft.drawString(String(points), 100, 150, 4);
-    if (!digitalRead(0) || !digitalRead(35))
+    if (reading != input_state)
     {
+      lastpress = millis();
+      input_state = reading;
+    }
+    if (millis() - lastpress > deb_delay && input_state == true)
+    {
+      input_state = 0;
       caso = 0;
       tft.fillScreen(TFT_BLACK);
     }
